@@ -1,6 +1,6 @@
 <?php
-namespace core;
-define('VENDOR',EURAXLUO . "/vendor/autoload.php");
+namespace verb;
+define('VENDOR',verb. "autoload.php");
 class ThirdParty
 {
 	static function init(){

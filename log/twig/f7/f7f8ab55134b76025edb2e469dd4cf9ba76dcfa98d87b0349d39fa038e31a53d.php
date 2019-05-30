@@ -12,7 +12,7 @@ use Twig\Sandbox\SecurityNotAllowedFunctionError;
 use Twig\Source;
 use Twig\Template;
 
-/* layouts/layout.html */
+/* layouts\layout.html */
 class __TwigTemplate_0f9ff47c4d8d49bf491077776d081e1686ce8e560122a148d1f3b1a57a55cf81 extends \Twig\Template
 {
     private $source;
@@ -56,7 +56,7 @@ class __TwigTemplate_0f9ff47c4d8d49bf491077776d081e1686ce8e560122a148d1f3b1a57a5
 
     public function getTemplateName()
     {
-        return "layouts/layout.html";
+        return "layouts\\layout.html";
     }
 
     public function getDebugInfo()
@@ -77,6 +77,6 @@ class __TwigTemplate_0f9ff47c4d8d49bf491077776d081e1686ce8e560122a148d1f3b1a57a5
 <footer>footer</footer>
 </body>
 
-</html>", "layouts/layout.html", "/mnt/c/home/php/euraxluo/app/views/layouts/layout.html");
+</html>", "layouts\\layout.html", "/mnt/c/home/php/verb/app/views/layouts/layout.html");
     }
 }

@@ -1,14 +1,19 @@
 <?php
 namespace app\ctrls;
-use \core\lib\model;
+use \verb\Model;
 use app\po\Adminlog;
 use app\models\AdminlogModel;
 use app\models\impl\AdminlogImpl;
 use app\models\AdminlogDao;
 
-class indexCtrl extends \core\loadClass{//index的控制器,集成这个东西有点问题啊
+class indexCtrl{//index的控制器,集成这个东西有点问题啊
+    function __construct()
+    {
+        p(1);
+        
+    }
     public function index(){
-        $getConf  = \core\lib\conf::get('CTRL','route');
+        $getConf  = \verb\Conf::get('CTRL','route');
         $data = "视图正文";
         $title = "视图标题";
         $this->assign('title',$title);//给视图文件复制
@@ -25,6 +30,7 @@ class indexCtrl extends \core\loadClass{//index的控制器,集成这个东西�
     }
 
     public function dbexample(){
+        P(12121);
                 //通过tdo直连接数据库
         // $model = model::getModel();
         // $sql = "SELECT * FROM admin";

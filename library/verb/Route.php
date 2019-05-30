@@ -1,10 +1,11 @@
 <?php
-namespace core\lib;
-use core\lib\conf;
-class route{
+namespace verb;
+use verb\conf;
+class Route{
     public $ctrl;
     public $action;
     public function __construct(){
+        p('Route-__construct');
         /**
          * xxx.com/index.php/index类/index方法
          * 1. 隐藏index.php

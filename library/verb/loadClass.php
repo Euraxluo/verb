@@ -1,15 +1,15 @@
 <?php
-namespace core;
+namespace verb;
 class loadClass {
     public $tVar = array();
     public static $classMap = array();
     static function run(){
-        \core\lib\log::init();//启动配置
-        \core\lib\log::log('loadClass run');
+        // \core\lib\log::init();//启动配置
+        // \core\lib\log::log('loadClass run');
         $route =  new \core\lib\route();//new一个不存在的类，会触发`spl_autoload_register('\core\loadClass::load');`
 //加载控制器
 
-        \core\lib\log::log($_SERVER,'server');
+        // \core\lib\log::log($_SERVER,'server');
         //把之前提取的ctrl和action拿出来解析构造成class
         $ctrlClass = $route->ctrl;
         $action = $route->action;

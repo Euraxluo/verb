@@ -1,8 +1,8 @@
 <?php
-namespace core\lib;
+namespace verb;
 use core\lib\drive\models\modelFactory;
 
-class model{
+class Model{
     static $model=null;
 
     final protected function __construct(){//单例模式
