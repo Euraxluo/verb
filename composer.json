@@ -1,0 +1,27 @@
+{
+    "name":"verb",
+    "description":"PHP Framework",
+    "type":"Framework",
+    "keywords":["PHP","PHP Framework","VERB"],
+    "homepage":"https://euraxluo.github.io",
+    "license":"Apache-2.0",
+    "authors":[
+        {
+            "name":"euraxluo",
+            "email":"euraxluo@outlook.com"
+        }
+    ],
+    "require":{
+        "php":">=5.4.0",
+        "filp/whoops":"*",
+        "symfony/var-dumper":"*",
+        "catfan/medoo":"*",
+        "twig/twig":"*"
+    },
+    "repositories":{
+        "packagist":{
+            "type":"composer",
+            "url":"https://packagist.phpcomposer.com"
+        }
+    }
+}
