@@ -16,13 +16,13 @@ class Loader
     private static $vendorFlag;
     //是否是Unix
     private static $Separator;
-
     /**
      * 注册自动加载机制
      *
+     * @param boolean $debug 是否开启debug模式，默认关闭
      * @return void
      */
-    public static function register()
+    public static function register($debug=false)
     {
         /**
          * 注册系统自动加载
@@ -34,7 +34,6 @@ class Loader
          */
         $rootPath = self::getRootPath();
         self::$composerPath = $rootPath . 'vendor' . DIRECTORY_SEPARATOR;
-        p(self::$composerPath);
         self::$Separator= DIRECTORY_SEPARATOR=='\\'?'/':'\\';
         /**
          * composer自动加载支持
@@ -42,13 +41,13 @@ class Loader
         if (is_dir(self::$composerPath)) {
             if (is_file(self::$composerPath . 'autoload.php')) {
                 require self::$composerPath . 'autoload.php'; 
-                { //debug专用代码
-                    // $whoops = new \Whoops\Run;
-                    // $errorTitle = 'verb framework error';
-                    // $option = new \Whoops\Handler\PrettyPageHandler();
-                    // $option->setPageTitle($errorTitle);
-                    // $whoops->pushHandler($option);
-                    // $whoops->register();
+                if($debug){
+                    $whoops = new \Whoops\Run;
+                    $errorTitle = 'verb framework error';
+                    $option = new \Whoops\Handler\PrettyPageHandler();
+                    $option->setPageTitle($errorTitle);
+                    $whoops->pushHandler($option);
+                    $whoops->register();
                 }
                 self::$vendorFlag = true;
             } else {
@@ -71,7 +70,7 @@ class Loader
      * 自动加载
      *
      * @param [type] $classname
-     * @return void
+     * @return bool
      */
     public static function autoLoad($classname)
     {
@@ -83,16 +82,25 @@ class Loader
         if(array_key_exists($classname, self::$classMap)){
             $path = self::$classMap[$classname];
             require_once $path;
+            return true;
         }else{
-            $path = VERB . DIRECTORY_SEPARATOR . str_replace(SEPARATOR, DIRECTORY_SEPARATOR, $classname) . '.php'; //path
+            $namesps = explode('\\',trim($classname,'\\'))[0];
+            if($namesps!='verb' && $namesps!='Doctrine' && $namesps!='Peekmo'){//判断是否属于框架
+                $path = ROOT . DIRECTORY_SEPARATOR . str_replace(SEPARATOR, DIRECTORY_SEPARATOR, $classname) . '.php'; //path
+            }else{
+                $path = VERB . DIRECTORY_SEPARATOR . str_replace(SEPARATOR, DIRECTORY_SEPARATOR, $classname) . '.php'; //path
+            }
             if (file_exists($path)) {
                 /**
                  * 如果path是一个php文件，那就加入到classMap中，并导入
                  */
                 self::$classMap[$classname] = $path;
                 require_once $path;
+            }else{
+                return false;
             }
         }
+
     }
     /**
      * 设置Class的解析map
@@ -139,36 +147,5 @@ class Loader
         //path = '/';
         $path = realpath(dirname($scriptName));
         return $path . DIRECTORY_SEPARATOR;
-    }
-
-    /**
-     * 注册类别名
-     *
-     * @param array $aliasArray
-     * @param string $class
-     * @return void
-     */
-    public static function setClassAlias($aliasArray, $class = null)
-    {
-
-        if (is_array($aliasArray)) {
-            self::$classAlias = array_merge(self::$classAlias, $aliasArray);
-        } else {
-            self::$classAlias[$aliasArray] = $class;
-        }
-        p('setClassAlias:');
-        p( self::$classAlias);
-    }
-
-    /**
-     * 通过别名includeClass
-     *
-     * @param string $alias
-     * @return void
-     */
-    public static function includeClassByAlias($alias)
-    {
-        p('includeClassBy:'.$alias);
-        self::autoLoad(self::$classAlias[$alias]);
     }
 }

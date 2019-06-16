@@ -12,7 +12,7 @@ class FileCache extends CacheDriver
     protected $options = [
         'expire'        => 0, //默认过期时间
         'cache_subdir'  => true, //是否使用缓存子目录
-        'prefix'        => '', //前缀
+        'prefix'        => 'verb', //前缀
         'path'          => ROOT . '/tmp', //缓存目录,
         'hash_type'     => 'md5', //哈希函数支持hash()支持的类型
         'data_compress' => false, //是否压缩
@@ -38,7 +38,6 @@ class FileCache extends CacheDriver
         if (!empty($options)) { //合并option
             $this->options = array_merge($this->options, $options);
         }
-
         if (empty($this->options['path'])) { //判断路径是否为空，如果为空，就使用系统tmp目录
             $this->options['path'] = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'verb_cache' . DIRECTORY_SEPARATOR;
         } elseif (substr($this->options['path'], -1) != DIRECTORY_SEPARATOR) { //加线

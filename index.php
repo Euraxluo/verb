@@ -1,8 +1,14 @@
 <?php
+/**
+ * 项目根目录
+ */
 define('ROOT',__DIR__);
-define('APP', __DIR__ . '/app/');
+/**
+ * 用户目录
+ */
+define('APP', __DIR__ .DIRECTORY_SEPARATOR.'app');
 //load base.php
-require __DIR__.'/library/base.php';
+require __DIR__.'/library/base.php';//启动框架
 /*#############################################$
 #################################@|;;$#########$
 #################################@|;;$#########$

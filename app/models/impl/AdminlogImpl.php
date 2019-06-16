@@ -1,15 +1,15 @@
 <?php
 namespace app\models\impl;
 
-use core\lib\model;
 use app\po\Adminlog;
 use app\models\AdminlogDao;
+use verb\model\ModelDriver;
 
 class AdminlogImpl implements AdminlogDao{
     public $table = 'adminlog';
     static public $adminModel = null;
     public function __construct(){
-        self::$adminModel = model::getModel();
+        self::$adminModel = ModelDriver::register();// model::getModel();
     
     }
     public function list(){

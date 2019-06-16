@@ -1,28 +1,44 @@
 {
-    "Route": {
-        "properties": {
-            "export_apis": true,
-            "url_begin": 1,
-            "api_path": "__DIR__ . /apis/",
-            "default_strict_matching": true
-        },
-        "default": {
-            "CTRL": "index",
-            "ACTION": "index"
+    "route": {
+        "/": {
+            "class": "app\\ctrls\\indexCtrl",
+            "method": "index",
+            "routeType": "GET"
         }
     },
-    "Database": {
-        "database_type": "mysql",
-        "database_name": "movie",
-        "server": "127.0.0.1",
-        "username": "movie",
-        "password": "6nDyGxz2SML2DSa7",
-        "charset": "utf8"
-    },
-    "Log": {
-        "DRIVE": "file",
+    "database": {
+        "driver": "medoo",
         "OPTION": {
-            "PATH": "ROOT . /log/"
+            "database_type": "mysql",
+            "database_name": "database name",
+            "server": "127.0.0.1",
+            "username": "username",
+            "password": "passwd",
+            "charset": "utf8"
+        }
+    },
+    "log": {
+        "driver": "file",
+        "OPTION": {
+            "PATH": "path to log"
+        }
+    },
+    "cache": {
+        "driver": "redis",
+        "OPTION": {
+            "host": "127.1",
+            "port": 6379,
+            "password": "",
+            "select": 0,
+            "timeout": 10,
+            "persistent": false,
+            "cache_subdir": true,
+            "path": "path to cache",
+            "hash_type": "md5",
+            "data_compress": false,
+            "prefix": "verb_",
+            "serialize": true,
+            "expire": 0
         }
     }
 }

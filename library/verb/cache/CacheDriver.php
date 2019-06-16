@@ -1,32 +1,66 @@
 <?php
 namespace verb\cache;
 
-use verb\cache\driver\Apc;
-use verb\cache\driver\Redis;
-use verb\cache\driver\File;
+use verb\cache\driver\ApcCache;
+use verb\cache\driver\RedisCache;
+use verb\cache\driver\FileCache;
+use verb\util\Logger;
+use verb\Conf;
 
 /**
  * 缓存的基类
  */
 abstract class CacheDriver
 {
-    /**
+	protected function __construct(){//单例模式
+    }
+    private static $cacheHandle=null;
+     /**
      * 默认为文件缓存
-     *
-     * @param string $drive
+     * 
+     * @param string $driver 缓存驱动默认为'file'.
+     * @param array $options 缓存参数
+     * 需要redis支持,先安装扩展phpredis;
+     * options = array() 参数列表:
+     * 'host'       => string,host;
+     * 'port'       => int,post;
+     * 'password'   => string,passwd; 
+     * 'select'     => int,选择数据库; 
+     * 'timeout'    => int,超时时间(秒); 
+     * 'expire'     => int,默认过期时间(秒); 
+     * 'persistent' => false/true,是否长连接; 
+     * 'prefix'     => string, 默认前缀; 
+     * 'serialize'  => true/false,是否序列化; 
+     * 'cache_subdir'   => true/false,是否使用缓存子目录; 
+     * 'path'           => string,缓存目录; 
+     * 'hash_type'      => string,哈希函数; 
+     * 'data_compress'  => false/true,是否压缩; 
      */
-    public static function register($drive='file'){
-        //根据db插件的类型，自动返回实例，支持原生pdo和medoo
-        switch (strtolower($drive)) {
-            case 'file':
-                return new File();
-                break;
-            case 'redis':
-                return new Redis();
-                break;
-            case 'apc':
-                return new Apc();
+    public static function register($driver='',$options=[]){
+        if(self::$cacheHandle == null){//单例模式,在初始化第一次时确定驱动
+            if(empty($driver)){
+                $cacheConf = Conf::getConfByName('CACHE');
+                $cacheConf= array_change_key_case($cacheConf,CASE_UPPER);
+                $driver = $cacheConf['DRIVER'];
+            }
+            if(empty($options)){
+                $options = Conf::getConfByName('CACHE')['OPTION'];
+            }
+            Logger::info('choose cache driver:'.$driver);
+            //根据db插件的类型，自动返回实例，支持原生pdo和medoo
+            switch (strtoupper($driver)) {
+                case 'FILE':
+                    self::$cacheHandle =  new FileCache($options);
+                    break;
+                case 'REDIS':
+                    self::$cacheHandle =  new RedisCache($options);
+                    break;
+                case 'APC':
+                    self::$cacheHandle =  new ApcCache($options);
+                    break;
+            }
         }
+        return self::$cacheHandle;
     }
     /**
      * 驱动句柄
@@ -175,7 +209,7 @@ abstract class CacheDriver
 
                 {//什么意思？
                     if ($value instanceof \Closure) {
-                        p("Container::getInstance()->invokeFunction:".$value);
+                        Logger::info("Container::getInstance()->invokeFunction:".$value);
                         // 获取缓存数据
                         $value = Container::getInstance()->invokeFunction($value);
                     }

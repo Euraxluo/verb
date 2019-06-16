@@ -1,5 +1,8 @@
 <?php
 namespace verb\util;
+
+use verb\exception\ClassNotFoundException;
+
 class AnnotationTest{
     /**
      * @return void
@@ -23,19 +26,20 @@ class MetaInfo
      * @return array
      */
     static function get($inst, $record_doc=false, $select=null){
-        p('MetaInfo=>get:');
-        $reflection = new \ReflectionClass($inst);//AnnotationTest
-
-        p($reflection);
-        $reader= new AnnotationReader($reflection);
-        p('reader:');
-        p($reader);
+        Logger::debug('get meta info');
+        try{
+            $reflection = new \ReflectionClass($inst);//AnnotationTest
+            $reader= new AnnotationReader($reflection);
+        }catch(\ReflectionException $e){
+            p("1.请注意检查类名与文件名是否一致
+2.请注意使用命名空间namespace
+3.请将视图控制文件放在名如*ctrl*的文件夹中
+4.此错误为\ReflectionException错误
+5.解决办法需要更改\\verb\\route\\InitRoute::initRouteTree()");
+            throw new ClassNotFoundException($e->getMessage().",please check that the classname same as filename", $inst);
+        }
 
         $info = array();
-
-        p('docComment:');
-        p($reflection->getDocComment());
-
         if($record_doc){
             if(false !== ($doc = $reflection->getDocComment())){
                 $info['doc'] = $doc;
@@ -45,8 +49,7 @@ class MetaInfo
         if($select !== null){
             $select = array_flip($select);//反转数组中所有的键以及它们关联的值
         }
-
-        p("获取类注解:");
+        Logger::debug('获取类注解');
         foreach ($reader->getClassAnnotations($reflection, $record_doc) as $id =>$ann ){
 
             if($select !==null && !array_key_exists($id, $select)){
@@ -54,12 +57,9 @@ class MetaInfo
             }
             $ann=$ann[0];//可能有多个重名的, 只取第一个
             $info[$id] = $ann;
-            p('info:');
-            p($info);
-            
         }
 
-        p('获取方法注解:');
+        Logger::debug('获取方法注解');
         foreach ($reflection->getMethods() as $method ){
             foreach ( $reader->getMethodAnnotations($method, $record_doc) as $id => $ann){
                 if($select !==null && !array_key_exists($id, $select)){
@@ -70,7 +70,7 @@ class MetaInfo
                 $info[$id][$method->getName()] = $ann;
             }
         }
-        p('获取属性注解:');
+        Logger::debug('获取属性注解');
         foreach ($reflection->getProperties() as $property ){
             foreach ( $reader->getPropertyAnnotations($property, $record_doc) as $id => $ann){
                 if($select !==null && !array_key_exists($id, $select)){
@@ -81,8 +81,6 @@ class MetaInfo
                 $info[$id][$property->getName()] = $ann;
             }
         }
-        p('获取的注解');
-        p($info);
         return $info;//全部的注解
     }
     

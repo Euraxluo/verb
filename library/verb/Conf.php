@@ -15,11 +15,11 @@ class Conf
      * @param bool $add 是否需要增加新的设置
      * @return void
      */
-    public static function setConf($conf,$add=false){
+    public static function setConf($conf=CONF,$add=false){
         if($add){
-            self::$confs = array_merge_recursive(self::$confs, self::resolvConf($conf));
+            self::$confs = array_merge_recursive(self::$confs, array_change_key_case(self::resolvConf($conf), CASE_UPPER));//转换为全大写
         }else{
-            self::$confs = array_merge(self::$confs, self::resolvConf($conf));
+            self::$confs = array_merge(self::$confs, array_change_key_case(self::resolvConf($conf), CASE_UPPER));
         }
         self::$conf_file = (!is_array($conf)&&is_file($conf))?$conf:null;//设置配置文件路径
     }
@@ -30,7 +30,7 @@ class Conf
      * @param string|array $conf
      * @return array
      */
-    public static function resolvConf($conf){
+    public static function resolvConf($conf=CONF){
         $conf_content = array();
         if(is_array($conf)){//如果是array
             $conf_content = $conf;//直接使用array
@@ -50,12 +50,12 @@ class Conf
 
 
     /**
-     * 获取所有配置项
+     * 获取初始化后的配置项
      *
      * @param string|array $conf
      * @return array
      */
-    public static function getAllConf($conf=null){
+    public static function getAllConf($conf=CONF){
         if(self::$confs!=null){
             return self::$confs;
         }else{
@@ -73,9 +73,9 @@ class Conf
      *
      * @param string $name
      * @param array|string $conf
-     * @return void
+     * @return array
      */
-    public static function getConfByName($name,$conf=''){
+    public static function getConfByName($name,$conf=CONF){
          if(isset(self::$confs[$name])){
             return self::$confs[$name];
         }else{
@@ -87,46 +87,5 @@ class Conf
             }
         }
     }
-
-    // static public function get($name, $file)
-    // {
-    //     /**
-    //      *1. 判断配置文件是否存在
-    //      *2. 判断配置是否存在
-    //      *3. 缓存配置 
-    //      */
-    //      if(isset(self::$confs[$file])){
-    //          return self::$confs[$file][$name];
-    //      }else{
-    //         $path = verb . '/core/config/' . $file . '.php';//文件的路径
-    //         if (is_file($path)) {//判断是否是一个文件
-    //             $conf = include $path;//引入这个配置文件
-    //             if (isset($conf[$name])) { //查看这个配置是否存在
-    //                 self::$confs[$file] = $conf;//key是配置文件的名字或者路径
-    //                 return $conf[$name];
-    //             } else {
-    //                 throw new \Exception('没有这个配置项' . $name);
-    //             }
-    //         } else {
-    //             throw new \Exception('找不到这个配置文件' . $file);
-    //         }
-    //      }
-
-    // }
-
-    // static public function all($name){
-    //     if(isset(self::$confs[$name])){
-    //         return self::$confs[$name];
-    //     }else{
-    //        $path = verb . '/core/config/' . $file . '.php';//文件的路径
-    //        if (is_file($path)) {//判断是否是一个文件
-    //             $conf = include $path;//引入这个配置文件
-    //             self::$confs[$file] = $conf;//key是配置文件的名字或者路径
-    //             return $conf;
-    //        } else {
-    //            throw new \Exception('找不到这个配置文件' . $file);
-    //        }
-    //     }
-    // }
 }
 ?>

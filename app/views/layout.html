@@ -1,0 +1,17 @@
+<html>
+    <head>
+        <title>{% block title %}{% endblock %} - MyTese</title>
+    </head>
+    <body>
+
+        <p>模板content开始</p>
+        <div id="content">{% block content %}{% endblock %}</div>
+        <p>模板content结束</p>
+
+        <footer>
+        {% block footer %}
+        模板footer
+        {% endblock %}
+        </footer>
+    </body>
+</html>

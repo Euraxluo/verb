@@ -18,9 +18,6 @@
         "catfan/medoo":"*",
         "twig/twig":"*"
     },
-    "require-dev": {
-        "phpunit/phpunit": "4.5.*"
-    },
     "repositories":{
         "packagist":{
             "type":"composer",

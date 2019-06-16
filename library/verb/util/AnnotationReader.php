@@ -5,31 +5,25 @@ namespace verb\util;
 class AnnotationReader{
 	public function __construct(){
 		$this->parser= new DocParser();
-		p('AnnotationReader=>DocParser，初始化文档分析器');
-		p($this->parser);//分析器
+		Logger::debug('初始化文档分析器');
 	}
 
 	//获取类注解
 	public function getClassAnnotations(\ReflectionClass $class, $record_doc=false)
 	{
-
+		Logger::debug('getClassAnnotations');
 		$cn = $class->getName();
-		p('getClassAnnotations:-----------'.$cn);
-
 		if(isset($this->cache[$cn]['class'])){//判断是否在本类缓存中
 			return $this->cache[$cn]['class'];
 		}
 		$this->cache[$cn]['class'] = array();//初始化注解未空
-
 		$annots = $this->parser->parse($class->getDocComment(), 'class '.$cn, $record_doc);
-		p($annots);//解析出的注解
 		
 		foreach ($annots as $annot){
 		    $key = $annot[0];
 		    $annot = $annot[1];
 		    $this->cache[$cn]['class'][$key][]=$annot;//填充到缓存中
 		}
-		p("类注解=》缓存的注解：");
 		return $this->cache[$cn]['class'];
 
 	}
@@ -41,12 +35,10 @@ class AnnotationReader{
 	public function getMethodAnnotations(\ReflectionMethod $method, $record_doc=false)
 	{
 
-		p('getMethodAnnotations---------:');
+		Logger::debug('getMethodAnnotations');
 		$cn = $method->getDeclaringClass()->getName();
 		
 		$id = $method->getName();
-		p($cn);
-		p($id);
 		if(isset($this->cache[$cn]['method'][$id])){
 		        return $this->cache[$cn]['method'][$id];
 		}
@@ -58,7 +50,6 @@ class AnnotationReader{
 		   
 			$this->cache[$cn]['method'][$id][$key][]=$annot;
 		}
-		p("方法注解=>缓存的注解：");
 		return $this->cache[$cn]['method'][$id];
 	}
 	
@@ -67,7 +58,7 @@ class AnnotationReader{
 	 */
 	public function getPropertyAnnotations(\ReflectionProperty $property, $record_doc=false)
 	{
-		p('getPropertyAnnotations---------:');
+		Logger::debug('getPropertyAnnotations');
 		$cn = $property->getDeclaringClass()->getName();
 		$id = $property->getName();
 
@@ -78,16 +69,12 @@ class AnnotationReader{
 
 		$this->cache[$cn]['property'][$id] = array();
 		$annots =  $this->parser->parse($property->getDocComment(), 'property '.$cn.'::$'.$id, $record_doc);
-		p('annots:');
-		p($annots);
 		foreach ($annots as $annot){
 		    $key= $annot[0];
 		    $annot= $annot[1];
 		    
 			$this->cache[$cn]['property'][$id][$key][]=$annot;
 		}
-
-		p("属性注解=>缓存的注解：");
 		return $this->cache[$cn]['property'][$id];
 	}
 	private $cache=array() ;

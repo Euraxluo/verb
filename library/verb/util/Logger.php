@@ -1,6 +1,8 @@
 <?php
 namespace verb\util;
 
+use verb\Conf;
+
 class Logger
 {
     // 默认DEBUG
@@ -42,6 +44,15 @@ class Logger
      */
     private static $log2phplog;
     /**
+     * 输出到日志文件中
+     *
+     * @param int $level
+     * @param string $message
+     * @return void
+     */
+    private static $log2file;
+
+    /**
      * 输出到浏览器控制台
      *
      * @param int $level
@@ -80,7 +91,7 @@ class Logger
      *
      * @var array
      */
-    private static $Color=[
+    private static $Color = [
         'CLOSE' => "",
         'DEBUG' => "teal",
         'INFO' => "maroon",
@@ -100,27 +111,28 @@ class Logger
      * 'ECHO'直接echo,
      * 'LOG'通过php输出,
      * 'JS'通过js输出,
-     * 'EMPTY'不输出
+     * 'EMPTY'不输出,
+     * 'FILE'文件输出
      * @param string|int $level
      * @param string $type
      * @return void
      */
-    public static function register($level,$type=null)
+    public static function register($level, $type = null)
     {
         self::setOption($level);
         Logger::$echoLog = function ($level, $message) {
             $title = array_search($level, self::$levels);
             $stackFrame = debug_backtrace()[2];
-            $position =' in ' . '(' . $stackFrame['line'] . ')';
-            $data = date('Y-m-d H:i:s') . ' ==' . $title . '== ' . $message .$position;
-            print_r(" <font color=\" ".self::$Color[$title]." \"> ".$data. "</font><br>\n");
+            $position = ' in ' . $stackFrame['file'] . ' (' . $stackFrame['line'] . ')';
+            $data = date('Y-m-d H:i:s') . ' ==' . $title . '== ' . $message . $position;
+            print_r(" <font color=\" " . self::$Color[$title] . " \"> " . $data . "</font><br>\n");
         };
-        Logger::$log2console = function($level,$message){
+        Logger::$log2console = function ($level, $message) {
             $title = array_search($level, self::$levels);
             $stackFrame = debug_backtrace()[2];
-            $position =' in ' . '(' . $stackFrame['line'] . ')';
-            $data = date('Y-m-d H:i:s') . ' ==' . $title . '== ' . $message.$position;
-            print_r("<script language='javascript'>console.log(\" ".$data. "\"); </script>");
+            $position = ' in ' . $stackFrame['file'] . ' (' . $stackFrame['line'] . ')';
+            $data = date('Y-m-d H:i:s') . ' ==' . $title . '== ' . $message . $position;
+            print_r("<script language='javascript'>console.log(\" " . $data . "\"); </script>");
         };
         Logger::$log2phplog = function ($level, $message) {
 
@@ -128,10 +140,34 @@ class Logger
             $stackFrame = debug_backtrace()[2];
             $position = ' in <b>' . $stackFrame['line'] . "</b>\n<br />";
             $data = date('Y-m-d H:i:s') . ' ' . $message . $position;
-            trigger_error(" <font color=\" ".self::$Color[$logLevel]." \"> ".$data. "</font>", self::$debug_type[$logLevel]);
+            trigger_error(" <font color=\" " . self::$Color[$logLevel] . " \"> " . $data . "</font>", self::$debug_type[$logLevel]);
+        };
+
+        Logger::$log2file = function ($level, $message) {
+            $title = array_search($level, self::$levels);
+            if (!array_key_exists('LOG_PATH', Conf::getAllConf())) {//判断是否存在配置项log_path
+                $logConf = Conf::getConfByName('LOG');//获取配置的log数组// $logConf =  Conf::getAllConf(CONF)['LOG'];
+                $logConf =  array_change_key_case($logConf, CASE_UPPER);//转大写
+                $logConf = array_change_key_case($logConf['OPTION'], CASE_UPPER);//获取option项
+                Conf::setConf([//设置配置项log_path
+                    "LOG_PATH" => $logConf['PATH']
+                ]);
+                $path = $logConf['PATH']; //文件存储位置
+            } else {
+                $path = Conf::getConfByName('LOG_PATH');// getAllConf()['LOG_PATH']; //文件存储位置
+            }
+            $stackFrame = debug_backtrace()[2];
+            $position = ' in ' . $stackFrame['file'] . ' (' . $stackFrame['line'] . ')';
+            $message = $message . $position;
+            if (!is_dir($path.DIRECTORY_SEPARATOR. date('YmdH'))) { //判断这个目录是否存在，不存在就新建，每小时作为一个文件夹存放
+                mkdir($path.DIRECTORY_SEPARATOR. date('YmdH'), '0777', true);
+            }
+            return  file_put_contents($path.DIRECTORY_SEPARATOR. date('YmdH').DIRECTORY_SEPARATOR.'log.php',$title.' '.date('H:i:s') .' '.
+            json_encode( $message, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES ).PHP_EOL,FILE_APPEND);
         };
 
         Logger::$emptyLog = function ($level, $message) { };
+
 
         self::setWriter($type);
     }
@@ -143,27 +179,32 @@ class Logger
      * @param string|null $color
      * @return void
      */
-    public static function setColor($level,$color=''){
-        if(is_array($level)){
+    public static function setColor($level, $color = '')
+    {
+        if (is_array($level)) {
             self::$Color = array_merge(self::$Color, $level);
-        }else{
+        } else {
             self::$Color[$level] = $color;
         }
     }
 
 
-    
+
     /**
      * 设置输出的类型
      * 'ECHO'直接输出echoLog,
      * 'LOG'通过trigger_error输出,
      * 'EMPTY'不输出
-     * 'JS'
+     * 'JS'控制台输出
+     * 'FILE'文件输出
      * @param string $type
      * @return void
      */
     public static function setWriter($type = null)
     {
+        if($type==null){//如果没有传$typem,那么是通过配置获取？
+
+        }
         $type = strtoupper($type);
         switch ($type) {
             case 'ECHO':
@@ -177,6 +218,9 @@ class Logger
                 break;
             case 'JS':
                 Logger::$writer = Logger::$log2console;
+                break;
+            case 'FILE':
+                Logger::$writer = Logger::$log2file;
                 break;
             default:
                 Logger::$writer = Logger::$log2phplog;
@@ -254,8 +298,8 @@ class Logger
     public static function close($msg)
     {
         if (self::$default <= self::$levels['CLOSE']) {
-            
-            call_user_func(Logger::$writer, self::$levels['CLOSE'],"<mark>".$msg."</mark>");
+
+            call_user_func(Logger::$writer, self::$levels['CLOSE'], "<mark>" . $msg . "</mark>");
         }
     }
 }

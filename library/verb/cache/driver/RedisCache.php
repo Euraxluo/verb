@@ -18,7 +18,6 @@ class RedisCache extends CacheDriver
         'serialize'  => true, //是否序列化
     ];
 
-
     /**
      * 需要redis支持,先安装扩展phpredis
      * options = array() 参数列表:

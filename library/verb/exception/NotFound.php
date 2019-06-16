@@ -1,5 +1,5 @@
 <?php
-namespace phprs\util\exceptions;
+namespace verb\exception;
 
 class NotFound extends \Exception
 {

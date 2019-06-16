@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% block title %}TemplateTest{% endblock %}
+{% block content %}
+    <p>模板代码部分</p>
+    <H1> {{ title }}</H1>
+    <H3> {{ data }} </H3>
+    <H3> {{ time }} </H3>
+    <H3> {{ assign }} </H3>
+    <p>php代码部分</p>
+    <H1> <?php echo $title; ?></H1>
+    <H3> <?php echo $data; ?> </H3>
+    <H3> <?php echo $time; ?> </H3>
+    <ul>
+    {% for item in navigation %}
+        <li><a href="{{ item.href }}">{{ item.caption }}</a></li>
+    {% endfor %}
+    </ul>
+{% endblock %}
+{% block footer %}
+{{ parent() }}
+{% endblock %}
+
+
+
+

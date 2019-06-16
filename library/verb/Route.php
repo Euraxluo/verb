@@ -1,45 +1,40 @@
 <?php
 namespace verb;
-use verb\conf;
+
+use verb\route\Tree;
+use verb\route\InitRoute;
+use verb\exception\BadRequest;
+use verb\exception\NotFound;
+
 class Route{
     public $ctrl;
     public $action;
+    /**
+     * 初始化
+     */
     public function __construct(){
-        p('Route-__construct');
-        /**
-         * xxx.com/index.php/index类/index方法
-         * 1. 隐藏index.php
-         * 改写.htaccess
-         * 2. 获取URL的参数部分
-         * 
-         * 3. 返回对应控制器和方法
-         */
-        if( isset($_SERVER['REQUEST_URI']) && $_SERVER['REQUEST_URI'] != '/'){//如果REQUEST_URL不为空且不为'/'，就进行解析
-            $path = $_SERVER['REQUEST_URI'];
-            $patharr = explode('/',trim($path,'/'));
-            if(isset($patharr[0])){//类名
-                $this->ctrl = $patharr[0];
-            }
-            unset($patharr[0]);
-            if(isset($patharr[1])){//方法名
-                $this->action = $patharr[1];
-                unset($patharr[1]);
+        $path = $_SERVER['PATH_INFO'];//获取请求路径
+        $patharr = ['/']+explode("/",$path);//格式化为arr
+        $tree =  Tree::getTree();//获取路由树类句柄(单例)
+        $routeCatch =  $tree->findNode($patharr);//查询路由树
+        //处理查询结果
+        if(isset($routeCatch['value'])){//如果有value项，匹配成功，否则
+            $routeMethod = $routeCatch['value'];//获取匹配结果
+            if(isset(InitRoute::getRouteInfo()[$routeMethod])){//判断是否有这个路由信息
+                $route = InitRoute::getRouteInfo()[$routeMethod];//获取路由对应的接口信息
             }else{
-                $this->action = conf::get('ACTION','route');
+                throw new NotFound();
             }
-            //多余部分是get请求参数
-            $count = count($patharr)+2;
-            $i=2;
-            while($i < $count){//两个两个的放进_GET中
-                if(isset($patharr[$i+1])){//如果是奇数，那么忽略
-                    $_GET[$patharr[$i]] = $patharr[$i +1];
-                }
-                $i = $i+2;
+            if($_SERVER['REQUEST_METHOD'] != $route['routeType']){//判断请求类型是否一致//todo 可改进
+                throw new BadRequest();
+            }else{
+                $this->ctrl = $route['class'];
+                $this->action = $route['method'];
             }
-        }else{//如果什么都没有输入，那么自动跳转到index下
-            $this->ctrl = conf::get('CTRL','route');
-            $this->action = conf::get('ACTION','route');
+        }else{
+            throw new NotFound();
         }
     }
+
 }
 ?>
