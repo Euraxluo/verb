@@ -97,8 +97,9 @@ class Logger
      * ERROR = 8;
      *
      * $type 设置输出类型
-     * 'ECHO'直接输出echoLog,
-     * 'LOG'通过trigger_error输出,
+     * 'ECHO'直接echo,
+     * 'LOG'通过php输出,
+     * 'JS'通过js输出,
      * 'EMPTY'不输出
      * @param string|int $level
      * @param string $type
@@ -109,19 +110,23 @@ class Logger
         self::setOption($level);
         Logger::$echoLog = function ($level, $message) {
             $title = array_search($level, self::$levels);
-            $data = date('Y-m-d H:i:s') . ' ==' . $title . '== ' . $message . "<br>\n";
-            print_r(" <font color=\" ".self::$Color[$title]." \"> ".$data. "</font>");
+            $stackFrame = debug_backtrace()[2];
+            $position =' in ' . '(' . $stackFrame['line'] . ')';
+            $data = date('Y-m-d H:i:s') . ' ==' . $title . '== ' . $message .$position;
+            print_r(" <font color=\" ".self::$Color[$title]." \"> ".$data. "</font><br>\n");
         };
         Logger::$log2console = function($level,$message){
             $title = array_search($level, self::$levels);
-            $data = date('Y-m-d H:i:s') . ' ==' . $title . '== ' . $message;
+            $stackFrame = debug_backtrace()[2];
+            $position =' in ' . '(' . $stackFrame['line'] . ')';
+            $data = date('Y-m-d H:i:s') . ' ==' . $title . '== ' . $message.$position;
             print_r("<script language='javascript'>console.log(\" ".$data. "\"); </script>");
         };
         Logger::$log2phplog = function ($level, $message) {
 
             $logLevel = array_search($level, self::$levels);
             $stackFrame = debug_backtrace()[2];
-            $position = ' in <b>' . $stackFrame['file'] . '</b> on line <b>' . $stackFrame['line'] . "</b>\n<br />";
+            $position = ' in <b>' . $stackFrame['line'] . "</b>\n<br />";
             $data = date('Y-m-d H:i:s') . ' ' . $message . $position;
             trigger_error(" <font color=\" ".self::$Color[$logLevel]." \"> ".$data. "</font>", self::$debug_type[$logLevel]);
         };
@@ -145,6 +150,9 @@ class Logger
             self::$Color[$level] = $color;
         }
     }
+
+
+    
     /**
      * 设置输出的类型
      * 'ECHO'直接输出echoLog,

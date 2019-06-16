@@ -2,10 +2,16 @@
 
 
 if (!function_exists('p')) {
-    function p($var)
+    function p($var = '')
     {
+        // $var='';
+        if ($var == '') {
+            $debugInfo = debug_backtrace();
+            $var = date('Y/m/d H:i:s') . '<b> return  NULL/FALSE/\'\' </b>in ';
+            $var .= $debugInfo[0]['file'] . ' (' . $debugInfo[0]['line'] . ')' . PHP_EOL;
+        }
         // if(INCLUDE_COMPOSER){//如果引入了第三方插件就使用dump输出
-        //     return dump($var);
+        //    return dump($var); 
         // }
         if (is_bool($var)) {
             var_dump($var);
@@ -37,6 +43,44 @@ if (!function_exists('post')) {
             }
         } else {
             return $default;
+        }
+    }
+}
+
+if (!function_exists('isTrue')) {
+    /**
+     * 如果判断不为true,抛出异常
+     * @param boolean $var
+     * @param string|Exception $msg
+     * @throws \Exception
+     * @return unknown
+     */
+    function isTrue($var, $msg = null)
+    {
+        if (!$var) {
+            if ($msg === null || is_string($msg)) {
+                throw new \Exception($msg);
+            } else {
+                throw $msg;
+            }
+        } else {
+            return $var;
+        }
+    }
+}
+
+if(!function_exists('e')){
+    /**
+     * 
+     * @param \Exception|string $e
+     * @throws unknown
+     */
+     function e($e){
+        p('Verify:'.$e);
+        if ($e === null || is_string($e)) {
+            throw new \Exception($e);
+        } else {
+            throw $e;
         }
     }
 }

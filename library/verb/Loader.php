@@ -34,13 +34,15 @@ class Loader
          */
         $rootPath = self::getRootPath();
         self::$composerPath = $rootPath . 'vendor' . DIRECTORY_SEPARATOR;
+        p(self::$composerPath);
         self::$Separator= DIRECTORY_SEPARATOR=='\\'?'/':'\\';
         /**
          * composer自动加载支持
          */
         if (is_dir(self::$composerPath)) {
             if (is_file(self::$composerPath . 'autoload.php')) {
-                require self::$composerPath . 'autoload.php'; { //debug专用代码
+                require self::$composerPath . 'autoload.php'; 
+                { //debug专用代码
                     // $whoops = new \Whoops\Run;
                     // $errorTitle = 'verb framework error';
                     // $option = new \Whoops\Handler\PrettyPageHandler();

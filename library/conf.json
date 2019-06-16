@@ -1,0 +1,28 @@
+{
+    "Route": {
+        "properties": {
+            "export_apis": true,
+            "url_begin": 1,
+            "api_path": "__DIR__ . /apis/",
+            "default_strict_matching": true
+        },
+        "default": {
+            "CTRL": "index",
+            "ACTION": "index"
+        }
+    },
+    "Database": {
+        "database_type": "mysql",
+        "database_name": "movie",
+        "server": "127.0.0.1",
+        "username": "movie",
+        "password": "6nDyGxz2SML2DSa7",
+        "charset": "utf8"
+    },
+    "Log": {
+        "DRIVE": "file",
+        "OPTION": {
+            "PATH": "ROOT . /log/"
+        }
+    }
+}

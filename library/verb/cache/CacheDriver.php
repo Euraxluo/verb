@@ -1,11 +1,33 @@
 <?php
 namespace verb\cache;
 
+use verb\cache\driver\Apc;
+use verb\cache\driver\Redis;
+use verb\cache\driver\File;
+
 /**
  * 缓存的基类
  */
 abstract class CacheDriver
 {
+    /**
+     * 默认为文件缓存
+     *
+     * @param string $drive
+     */
+    public static function register($drive='file'){
+        //根据db插件的类型，自动返回实例，支持原生pdo和medoo
+        switch (strtolower($drive)) {
+            case 'file':
+                return new File();
+                break;
+            case 'redis':
+                return new Redis();
+                break;
+            case 'apc':
+                return new Apc();
+        }
+    }
     /**
      * 驱动句柄
      * @var object
@@ -184,11 +206,11 @@ abstract class CacheDriver
     /**
      * 缓存标签
      * @param  string        $tag 标签名
-     * @param  string|array  $keys 缓存标识
+     * @param  string|array  $keys 缓存标识，string用','分割
      * @param  bool          $overlay 是否覆盖
      * @return $this
      */
-    public function tag($tag, $keys = null, $overlay = false)
+    protected function setTag($tag, $keys = null, $overlay = false)
     {
         if (is_null($tag)) {//判断有没有tag参数
 
@@ -203,46 +225,17 @@ abstract class CacheDriver
 
             $keys = array_map([$this, 'getCacheKey'], $keys);//将函数作用到$keys中
 
+
             if ($overlay) {//判断是否覆盖
                 $value = $keys;
             } else {
-                $value = array_unique(array_merge($this->getTagItem($tag), $keys));//合并，去重
+                $value = array_unique(array_merge($this->getTagItem($tag),$keys));//合并，去重
             }
 
             $this->set($tagKey, implode(',', $value), 0);//把数组合并为字符串，然后存到key中
         }
 
         return $this;
-    }
-
-    /**
-     * 更新标签
-     * @param  string $name 缓存标识
-     * @return void
-     */
-    protected function setTagItem($tag)
-    {
-        if ($this->tag) {
-            $tagKey    = $this->getTagkey($this->tag);
-            $prev      = $this->tag;//tmp
-            $this->tag = null;
-
-            if ($this->has($tagKey)) {//判断有没有这个tag
-                $value   = explode(',', $this->get($tagKey));//字符串转化为数组
-                $value[] = $tag;//这啥意思？
-
-                if (count($value) > 1000) {
-                    array_shift($value);//删除数组中第一个元素
-                }
-
-                $value = implode(',', array_unique($value));//把数组去重然后合并为字符串
-            } else {
-                $value = $tag;//缓存中每有这个tag，那么直接存进去
-            }
-
-            $this->set($tagKey, $value, 0);
-            $this->tag = $prev;
-        }
     }
 
     /**
@@ -272,7 +265,7 @@ abstract class CacheDriver
      */
     protected function getTagKey($tag)
     {
-        return 'tag_' . md5($tag);
+        return 'verbTag_' . md5($tag);
     }
 
 
@@ -324,7 +317,7 @@ abstract class CacheDriver
      * @param  string   $prefix         序列化前缀标识
      * @return $this
      */
-    public static function registerSerialize($serialize, $unserialize, $prefix = 'verb_serialize:')
+    public static function setSerialize($serialize, $unserialize, $prefix = 'verb_serialize:')
     {
         self::$serialize = [$serialize, $unserialize, $prefix, strlen($prefix)];
     }
@@ -359,3 +352,29 @@ abstract class CacheDriver
         return $this->writeTimes;
     }
 }
+/*
+     protected function setTagItem($tag)
+     {
+ 
+         if ($this->tag) {
+             $tagKey    = $this->getTagkey($this->tag);
+             $prev      = $this->tag;//tmp
+             $this->tag = null;
+             if ($this->has($tagKey)) {//判断有没有这个tag
+                 $value   = explode(',', $this->get($tagKey));//字符串转化为数组
+                 $value[] = $tag;//这啥意思？
+ 
+                 if (count($value) > 1000) {
+                     array_shift($value);//删除数组中第一个元素
+                 }
+ 
+                 $value = implode(',', array_unique($value));//把数组去重然后合并为字符串
+             } else {
+                 $value = $tag;//缓存中没有这个tag，那么直接存进去
+             }
+ 
+             $this->set($tagKey, $value, 0);
+             $this->tag = $prev;
+         }
+     }
+*/
