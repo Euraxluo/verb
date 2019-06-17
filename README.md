@@ -25,7 +25,8 @@
 │   ├── base.php                                [初始化文件]
 │   ├── conf.json                               [框架配置文件]
 │   ├── conf.php                                [框架配置文件]
-│   ├── Doctrine                                [注解解析第三方包]│   └── verb                                    [verb框架目录]
+│   ├── Doctrine                                [注解解析第三方包]│   
+│   └── verb                                    [verb框架目录]
 │       ├── Conf.php                            [配置解析类]
 │       ├── Guider.php                          [引导注册类]
 │       ├── Loader.php                          [自动加载类]
@@ -63,7 +64,7 @@
 ├── composer.json               [composer配置文件]
 ├── composer.lock
 └── index.php                   [入口文件]
-``` 
+```
 ### USE
 #### 你如果想使用medoo，Twig以及其他，你应该先`composer install`和`composer update`
 1. 找到框架配置文件，选择json或者php文件写入你的配置
