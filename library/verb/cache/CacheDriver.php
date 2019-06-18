@@ -46,7 +46,10 @@ abstract class CacheDriver
             if(empty($options)){
                 $options = Conf::getConfByName('CACHE')['OPTION'];
             }
-            Logger::info('choose cache driver:'.$driver);
+            if(empty($driver)){
+                $driver = 'FILE';
+            }     
+            Logger::info('choose cache driver:'.$driver);       
             //根据db插件的类型，自动返回实例，支持原生pdo和medoo
             switch (strtoupper($driver)) {
                 case 'FILE':

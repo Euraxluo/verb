@@ -4,6 +4,7 @@ namespace verb;
 use verb\exception\NotFound;
 use verb\exception\BadRequest;
 use verb\exception\Forbidden;
+use verb\util\Logger;
 
 /**
  * 引导类
@@ -28,18 +29,13 @@ class Guider
             $action = $route->action;
             $ctrl =  new $ctrlClass();
             $ret = $ctrl->$action();
+            Logger::debug('$ret');
             if($ret !== null){
                 header("Content-Type: application/json; charset=UTF-8");
-                if(isset($ret['code'])){
-                    $sstr = [
-                        'code' => $ret['code'],
-                        'message' => $ret['message'],
-                    ];
+                if(isset($ret['code'])){   
+                    $sstr = api($ret['code'],$ret['message']);
                 }else{
-                    $sstr = [
-                        'code' => $sucessCode,
-                        'message' => $ret,
-                    ];
+                    $sstr = api($sucessCode,$ret);
                 }
                 echo json_encode($sstr);
             }
@@ -58,10 +54,7 @@ class Guider
         }
         if ($err) {
             header("Content-Type: application/json; charset=UTF-8");
-            $estr = array(
-                'error' => get_class($err),
-                'message' => $err->getMessage(),
-            );
+            $estr = api(get_class($err),$err->getMessage());
             echo json_encode($estr);
         }
     }

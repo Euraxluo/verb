@@ -173,3 +173,19 @@ if (!function_exists('cutStrBy2Char')) {
         return mb_substr($str, $b, $e);
     }
 }
+
+if(!function_exists('api')){
+    /**
+     * 包装下接口
+     *
+     * @param int $code
+     * @param mix $message
+     * @return void
+     */
+    function api($code,$message){
+        return [
+            "code" => $code,
+            "message" => $message
+        ];
+    }
+}

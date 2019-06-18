@@ -147,8 +147,12 @@ class InitRoute
                                 if (strpos($Annota, '::') !== false) { //解析出额外的请求类型参数
                                     $methodType = strtoupper(explode("::", $Annota)[1]);
                                 }
+                                if(empty( $value['value'])){
+                                    $value['value'] = '*';//如果为空，表示是匹配任意路径
+                                }
                                 $methodRoute ='/'.$ctrlClassRootRoute .'/'. $value['value'];
-                                $methodRoute = str_replace("//", "/", $methodRoute); //去掉多余的斜杠
+                                $methodRoute = preg_replace('/\/(?=\/)/','',$methodRoute);//去掉多余的斜杠
+                                // $methodRoute = str_replace("//", "/", $methodRoute); //去掉多余的斜杠
                                 self::$route_info[$methodRoute] = [
                                     'class' => $ctrlClass,
                                     'method' => $method,

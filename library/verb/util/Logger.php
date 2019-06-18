@@ -117,7 +117,7 @@ class Logger
      * @param string $type
      * @return void
      */
-    public static function register($level, $type = null)
+    public static function register($level='DEBUG', $type = 'FILE')
     {
         self::setOption($level);
         Logger::$echoLog = function ($level, $message) {
@@ -200,11 +200,8 @@ class Logger
      * @param string $type
      * @return void
      */
-    public static function setWriter($type = null)
+    public static function setWriter($type)
     {
-        if($type==null){//如果没有传$typem,那么是通过配置获取？
-
-        }
         $type = strtoupper($type);
         switch ($type) {
             case 'ECHO':

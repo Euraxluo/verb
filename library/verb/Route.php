@@ -17,6 +17,7 @@ class Route{
         $patharr = ['/']+explode("/",$path);//格式化为arr
         $tree =  Tree::getTree();//获取路由树类句柄(单例)
         $routeCatch =  $tree->findNode($patharr);//查询路由树
+        // p($_SERVER);
         //处理查询结果
         if(isset($routeCatch['value'])){//如果有value项，匹配成功，否则
             $routeMethod = $routeCatch['value'];//获取匹配结果

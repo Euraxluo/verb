@@ -99,3 +99,5 @@ ROOT\test.php 中写了一些缓存测试
 APP\ctrls\indexCtrl.php 中示例了mysql的连接和使用()。以及模板引擎的使用方法
 ```
 16. 关于模板引擎：通过composer使用的Twig，查看Twig官网
+17. 静态资源请新建一个static放到ROOT下面，html的静态资源访问请使用/static/~
+18. 现在可以使用verb\AutoGenerationClass::register(path,namespace)来连接数据库，自动生成实体类

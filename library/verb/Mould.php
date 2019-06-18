@@ -71,6 +71,7 @@ class Mould
             $paths = [$paths];
         }
         foreach ($paths as $path) {
+            $path =  str_replace(SEPARATOR, DIRECTORY_SEPARATOR, $path);
             $this->loader->addPath($path, $namespace);
         }
     }

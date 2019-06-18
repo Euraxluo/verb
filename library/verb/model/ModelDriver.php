@@ -4,6 +4,7 @@ namespace verb\model;
 use verb\model\driver\PdoModel;
 use verb\model\driver\MedooModel;
 use verb\Conf;
+use verb\util\Logger;
 
 class ModelDriver
 {
@@ -26,6 +27,10 @@ class ModelDriver
                 $modelConf= array_change_key_case($modelConf,CASE_UPPER);
                 $driver = $modelConf['DRIVER'];
             }
+            if(empty($driver)){
+                $driver = 'PDO';
+            }
+            Logger::info('choose cache driver:'.$driver);
             //根据db插件的类型，自动返回实例，支持原生pdo和medoo
             switch (strtoupper($driver)) {
                 case 'PDO':

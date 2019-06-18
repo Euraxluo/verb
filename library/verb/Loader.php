@@ -85,7 +85,7 @@ class Loader
             return true;
         }else{
             $namesps = explode('\\',trim($classname,'\\'))[0];
-            if($namesps!='verb' && $namesps!='Doctrine' && $namesps!='Peekmo'){//判断是否属于框架
+            if($namesps!='verb' && $namesps!='Doctrine'){//判断是否属于框架
                 $path = ROOT . DIRECTORY_SEPARATOR . str_replace(SEPARATOR, DIRECTORY_SEPARATOR, $classname) . '.php'; //path
             }else{
                 $path = VERB . DIRECTORY_SEPARATOR . str_replace(SEPARATOR, DIRECTORY_SEPARATOR, $classname) . '.php'; //path
