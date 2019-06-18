@@ -32,6 +32,7 @@
 │       ├── Loader.php                          [自动加载类]
 │       ├── Mould.php                           [模板引擎类]
 │       ├── Route.php                           [路由初始化类]
+|       ├── AutoGenerationClass.php             [自动类加载]
 │       ├── cache
 │       │   ├── CacheDriver.php                 [缓存驱动]
 │       │   └── driver
