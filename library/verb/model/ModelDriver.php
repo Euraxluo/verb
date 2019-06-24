@@ -44,5 +44,5 @@ class ModelDriver
         return self::$modelHandel;
     }
 
-    
+
 }

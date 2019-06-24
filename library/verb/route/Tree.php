@@ -34,7 +34,7 @@ class Tree
 	}
 	/**
 	 * 插入一个节点
-	 * 插入时允许使用通配符* 
+	 * 插入时允许使用通配符*
 	 * @param unknown $value
 	 * @param string $replace_exits 是否替换已存在的
 	 * @param mixed $replaced 被替换的原始值
@@ -112,7 +112,7 @@ class Tree
 		return $res;
 	}
 	/**
-	 * 遍历路径 
+	 * 遍历路径
 	 * @param array $path
 	 * @return boolean 全部遍历完返回true，否则返回false
 	 */
@@ -212,7 +212,7 @@ class Tree
 		return self::$arr;
 	}
 	/**
-	 * 
+	 *
 	 * @param array $tree
 	 * @param array $res
 	 * @return void

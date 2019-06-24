@@ -1,8 +1,8 @@
 {
     "route": {
         "/": {
-            "class": "app\\ctrls\\indexCtrl",
-            "method": "index",
+            "class": "Ctrlclass",
+            "method": "function",
             "routeType": "GET"
         }
     },
@@ -24,7 +24,7 @@
         }
     },
     "cache": {
-        "driver": "redis",
+        "driver": "apc",
         "OPTION": {
             "host": "127.1",
             "port": 6379,

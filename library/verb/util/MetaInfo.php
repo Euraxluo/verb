@@ -8,7 +8,7 @@ class AnnotationTest{
      * @return void
      */
     public function test(){
-        
+
     }
 }
 /**
@@ -32,7 +32,7 @@ class MetaInfo
             $reader= new AnnotationReader($reflection);
         }catch(\ReflectionException $e){
             p("1.请注意检查类名与文件名是否一致
-2.请注意使用命名空间namespace
+2.请注意使用命名空间namespace,并检查是否和路径一致
 3.请将视图控制文件放在名如*ctrl*的文件夹中
 4.此错误为\ReflectionException错误
 5.解决办法需要更改\\verb\\route\\InitRoute::initRouteTree()");
@@ -83,7 +83,7 @@ class MetaInfo
         }
         return $info;//全部的注解
     }
-    
+
     static function testAnnotation(){//判断是否可以正常获取注解
         isTrue(count(self::get(new AnnotationTest(),true)), 'Annotation dose not work! If opcache is enable, please set opcache.save_comments=1 and opcache.load_comments=1');
     }
@@ -92,5 +92,5 @@ class MetaInfo
      * @var unknown
      */
     private static $valid=array();
-    
+
 }

@@ -124,11 +124,13 @@ class FileCache extends CacheDriver
 
         if (false !== $content) { //如果返回不是false
             $expire = (int)substr($content, 8, 12); //这部分是存储过期时间的
+
             //如果当前时间大于文件修改时间以及文件保存的过期时间之和,就删除缓存文件
             if (0 != $expire && time() > filemtime($filename) + $expire) {
                 $this->unlink($filename); //缓存过期删除缓存文件
                 return $default;
             }
+
 
             $this->expire = $expire; //存下过期时间，用来给其他函数用
             $content      = substr($content, 32);
@@ -186,7 +188,7 @@ class FileCache extends CacheDriver
     public function inc($name, $step = 1)
     {
         if ($this->has($name)) { //判断是否存在这个缓存
-            $value  = $this->get($name) + $step; //将
+            $value  = intval($this->get($name)) + $step; //将
             $expire = $this->expire; //会在get()时把过期时间存下来
         } else { //不存在初始值为步长
             $value  = $step;
@@ -206,7 +208,7 @@ class FileCache extends CacheDriver
     public function dec($name, $step = 1)
     {
         if ($this->has($name)) {
-            $value  = $this->get($name) - $step;
+            $value  = intval($this->get($name)) - $step;
             $expire = $this->expire;
         } else {
             $value  = -$step;

@@ -32,7 +32,7 @@ class InitRoute
      */
     private static $route_info = [];
     private static $expire;
-    
+
     /**
      * 初始化APP下的视图控制文件(*ctrl*)，缓存路由信息
      * 可以解析配置文件中的路由
@@ -169,7 +169,7 @@ class InitRoute
     }
     /**
      * 设置route=>[$routeInfo]
-     * 
+     *
      * @param string $route
      * @param array $routeInfo class=类,method=方法,routeType=GET/POST
      * @return bool

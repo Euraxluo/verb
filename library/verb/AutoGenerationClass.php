@@ -1,5 +1,8 @@
 <?php
 namespace verb;
+
+use verb\util\Logger;
+
 class AutoGenerationClass{
     private static $conn;
     private static $dataStruct = [];
@@ -40,7 +43,7 @@ class AutoGenerationClass{
             self::TableStructureAnalysis();
         }catch(\PDOException $e){
             echo $e->getMessage();
-        } 
+        }
 
     }
     /**
@@ -52,10 +55,10 @@ class AutoGenerationClass{
          $string =  str_replace(ROOT,"",$path);
          if($namespace==null){
             $namesps = explode(DIRECTORY_SEPARATOR,trim($string,DIRECTORY_SEPARATOR));
-            $namespace =  join("\\", $namesps); 
+            $namespace =  join("\\", $namesps);
          }
          foreach(self::$dataStruct as $className=>$properts ){
-            $classContext = "<?php\nnamespace " . $namespace . ";\nclass " .$className."{\n";   
+            $classContext = "<?php\nnamespace " . $namespace . ";\nclass " .$className."{\n";
             $constructHead = "    public function __construct(";
             $constructContext = "";
             $toStringHead = "    public function toArray(){\n        return [\n";
@@ -115,12 +118,18 @@ class AutoGenerationClass{
                 echo ("mkdir: {$dir} faild in writeClass() of AutoGenerationClass.php");
             }
         }
-        try{
-            $path = $dir.$fileName;
-            return file_put_contents($path,$context,LOCK_EX);
-        }catch(\Exception $e){
-            echo ("write class context to {$path} faild in writeClass() of AutoGenerationClass.php");
+        if(!is_file($dir.'/'.$fileName)){
+            try{
+                $path = $dir.'/'.$fileName;
+                return file_put_contents($path,$context,LOCK_EX);
+            }catch(\Exception $e){
+                echo ("write class context to {$path} faild in writeClass() of AutoGenerationClass.php");
+            }
+        }else{
+            Logger::info($dir.'/'.$fileName." haved exists");
+            return;
         }
+
     }
 
      /*
@@ -133,7 +142,7 @@ class AutoGenerationClass{
          }, $str);
          return $str;
      }
-  
+
      /*
       * 驼峰转下划线
       */

@@ -2,13 +2,8 @@
 return [
     "route" => [ //建议配置，也可以同时使用注解，配置时延由过期时间决定
         '/' => [
-            'class' => 'app\\ctrls\\indexCtrl',
+            'class' => 'app\\TestCtrls\\test',
             'method' => 'index',
-            'routeType' => 'GET'
-        ],
-        '/home/test3' => [
-            'class' => 'app\\ctrls\\home',
-            'method' => 'test3',
             'routeType' => 'GET'
         ]
     ],
@@ -16,16 +11,17 @@ return [
         "driver" => "medoo",
         "OPTION" => [ // medoo和pdo的公共配置项,如果你要使用medoo,请composer install
             "database_type" => "mysql",
-            "database_name" => "movie",
+            "database_name" => "online_exam",
             "server" => "127.0.0.1",
-            "username" => "movie",
-            "password" => "6nDyGxz2SML2DSa7",
+            "username" => "online_exam",
+            "password" => "53yGd7zctsJMfxDP",
             "charset" => "utf8"
         ]
     ],
     "log" => [ //如果使用文件输出日志，必须配置
         "driver" => "file", //驱动类型，todo：mysql
         "OPTION" => [ //相关设定
+            "LEVEL" =>'debug',//日志级别
             "PATH" => ROOT . "/log" //path to log
         ]
     ],

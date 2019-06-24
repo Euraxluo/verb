@@ -1,13 +1,16 @@
- <IfModule mod_rewrite.c>
- RewriteEngine on
- RewriteCond %{REQUEST_FILENAME} !-f
- RewriteRule ^(.*)$ index.php/$1 [QSA,PT,L]
- </IfModule>
- <FilesMatch "^(.*)\.php$">
+<IfModule mod_rewrite.c>
+RewriteEngine on
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ index.php/$1 [QSA,PT,L]
+<FilesMatch "^(.*)\.php$">
     Order Deny,Allow
     Deny from all
 </FilesMatch>
 <FilesMatch "^index\.php$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>
+<FilesMatch "^static//(.*)$">
     Order Allow,Deny
     Allow from all
 </FilesMatch>

@@ -167,7 +167,7 @@ class AnnotationException extends \Exception
     {
         return new self(sprintf(
             '[Enum Error] Attribute "%s" of @%s declared on %s accept only [%s], but got %s.',
-            $attributeName, 
+            $attributeName,
             $annotationName,
             $context,
             implode(', ', $available),

@@ -3,6 +3,8 @@
 
 ### After a semester of studying php, write a small framework
 
+遵守**PSR-4 **，**PSR-2**规范
+
 ### 文件结构 (directory structure)
 ```
 .
@@ -25,14 +27,13 @@
 │   ├── base.php                                [初始化文件]
 │   ├── conf.json                               [框架配置文件]
 │   ├── conf.php                                [框架配置文件]
-│   ├── Doctrine                                [注解解析第三方包]│   
+│   ├── Doctrine                                [注解解析第三方包]│
 │   └── verb                                    [verb框架目录]
 │       ├── Conf.php                            [配置解析类]
 │       ├── Guider.php                          [引导注册类]
 │       ├── Loader.php                          [自动加载类]
 │       ├── Mould.php                           [模板引擎类]
 │       ├── Route.php                           [路由初始化类]
-|       ├── AutoGenerationClass.php             [自动类加载]
 │       ├── cache
 │       │   ├── CacheDriver.php                 [缓存驱动]
 │       │   └── driver
@@ -86,7 +87,7 @@
      */
     class TestCtrl{
         /**
-         *@route::get("/test") 
+         *@route::get("/test")
         */
         function test(){}
     }
@@ -100,5 +101,40 @@ ROOT\test.php 中写了一些缓存测试
 APP\ctrls\indexCtrl.php 中示例了mysql的连接和使用()。以及模板引擎的使用方法
 ```
 16. 关于模板引擎：通过composer使用的Twig，查看Twig官网
-17. 静态资源请新建一个static放到ROOT下面，html的静态资源访问请使用/static/~
-18. 现在可以使用verb\AutoGenerationClass::register(path,namespace)来连接数据库，自动生成实体类
+
+17. Apache 配置.htaccess
+重写请求，全部请求转到index.php中
+关闭所有的php请求
+打开index.php的请求
+打开路径为/static/*的请求
+```
+<IfModule mod_rewrite.c>
+RewriteEngine on
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ index.php/$1 [QSA,PT,L]
+<FilesMatch "^(.*)\.php$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+<FilesMatch "^index\.php$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>
+<FilesMatch "^static//(.*)$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>
+```
+18. Nginx:
+```
+    location / {  
+        root /rootPath/;  
+        index index.php index.html index.htm;
+        if (!-e $request_filename) {  
+        rewrite ^/(.*)$ /index.php?s=$1 last;
+        }  
+    }  
+```
+19. 全局函数。请查看**常用方法function.php**
+20. 将MEDOO移动到了library下，因此，直接支持
+21. 使用redis缓存和apc缓存，请安装并配置php
