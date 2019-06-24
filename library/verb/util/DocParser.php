@@ -253,7 +253,7 @@ final class DocParser
             $this->match(DocLexer::T_AT);
             $name = $this->Identifier();
             $value = $this->MethodCall();
-            
+
             if($record_doc){
                  if(($count= count($annotations)) !==0){
                     $doc= $this->lexer->getInputUntilPosition($doc_end);

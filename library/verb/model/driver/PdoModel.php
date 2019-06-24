@@ -16,6 +16,6 @@ class PdoModel extends \PDO{
             parent::__construct($dsn,$dbconf['username'],$dbconf['password']);
         }catch(\PDOException $e){
             P($e->getMessage());
-        } 
+        }
     }
 }

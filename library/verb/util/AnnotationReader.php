@@ -18,7 +18,7 @@ class AnnotationReader{
 		}
 		$this->cache[$cn]['class'] = array();//初始化注解未空
 		$annots = $this->parser->parse($class->getDocComment(), 'class '.$cn, $record_doc);
-		
+
 		foreach ($annots as $annot){
 		    $key = $annot[0];
 		    $annot = $annot[1];
@@ -27,7 +27,7 @@ class AnnotationReader{
 		return $this->cache[$cn]['class'];
 
 	}
-	
+
 	/**
 	 * 获取方法注解
 	 * {@inheritDoc}
@@ -37,7 +37,7 @@ class AnnotationReader{
 
 		Logger::debug('getMethodAnnotations');
 		$cn = $method->getDeclaringClass()->getName();
-		
+
 		$id = $method->getName();
 		if(isset($this->cache[$cn]['method'][$id])){
 		        return $this->cache[$cn]['method'][$id];
@@ -47,12 +47,12 @@ class AnnotationReader{
 		foreach ($annots as $annot){
 		    $key = $annot[0];
 		    $annot = $annot[1];
-		   
+
 			$this->cache[$cn]['method'][$id][$key][]=$annot;
 		}
 		return $this->cache[$cn]['method'][$id];
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -72,7 +72,7 @@ class AnnotationReader{
 		foreach ($annots as $annot){
 		    $key= $annot[0];
 		    $annot= $annot[1];
-		    
+
 			$this->cache[$cn]['property'][$id][$key][]=$annot;
 		}
 		return $this->cache[$cn]['property'][$id];

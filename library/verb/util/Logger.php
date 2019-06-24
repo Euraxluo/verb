@@ -316,7 +316,7 @@ class Logger
     debug_backtrace():
     产生一条 PHP 的回溯跟踪(backtrace)。
     debug_backtrace ([ int $options = DEBUG_BACKTRACE_PROVIDE_OBJECT [, int $limit = 0 ]]): array
-    
+
     array_search('green', $array)
     通过value取key
 

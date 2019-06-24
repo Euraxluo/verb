@@ -5,18 +5,23 @@ if (!function_exists('p')) {
     function p($var = '')
     {
         // $var = '';
-        if ($var == '') {
+        if (!is_bool($var) && !is_int($var) && !is_null($var) &&  $var == '') {
             $debugInfo = debug_backtrace();
-            $var = date('Y/m/d H:i:s') . '<b> return  NULL/FALSE/\'\' </b>in ';
+            $var = date('Y/m/d H:i:s') . '<b> return \'\' </b>in ';
             $var .= $debugInfo[0]['file'] . ' (' . $debugInfo[0]['line'] . ')' . PHP_EOL;
-        } else if (is_bool($var)) {
-            var_dump($var);
-        } else if (is_null($var)) {
-            var_dump(NULL);
-        } else if (COMPOSER) { //如果引入了第三方插件就使用dump输出
+        }
+        if (COMPOSER) { //如果引入了第三方插件就使用dump输出
             return dump($var);
+        } else if (is_bool($var)) {
+            if ($var) {
+                echo "<pre style='white-space: pre-wrap;word-wrap:break-word;position:relative;z-index:1000;padding:10px;border-radius:5px;background:#18171B;bordeer:1px solid #aaa;font:12px Menlo, Monaco, Consolas, monospace;font-size:14px;color:#FF8400;line-height:18px;opacity:0.9;'>" . 'true' . "</pre>";
+            } else {
+                echo "<pre style='white-space: pre-wrap;word-wrap:break-word;position:relative;z-index:1000;padding:10px;border-radius:5px;background:#18171B;bordeer:1px solid #aaa;font:12px Menlo, Monaco, Consolas, monospace;font-size:14px;color:#FF8400;line-height:18px;opacity:0.9;'>" . 'false' . "</pre>";
+            }
+        } else if (is_null($var)) {
+            echo "<pre style='white-space: pre-wrap;word-wrap:break-word;position:relative;z-index:1000;padding:10px;border-radius:5px;background:#18171B;bordeer:1px solid #aaa;font:12px Menlo, Monaco, Consolas, monospace;font-size:14px;color:#FF8400;line-height:18px;opacity:0.9;'>" . 'null' . "</pre>";
         } else {
-            echo "<pre style='position:relative;z-index:1000;padding:10px;border-radius:5px;background:#f5f5f5;bordeer:1px solid #aaa;font-size:14px;line-height:18px;opacity:0.9;'>" . print_r($var, true) . "</pre>";
+            echo "<pre style='white-space: pre-wrap;word-wrap:break-word;position:relative;z-index:1000;padding:10px;border-radius:5px;background:#18171B;bordeer:1px solid #aaa;font:12px Menlo, Monaco, Consolas, monospace;font-size:14px;color:#FF8400;line-height:18px;opacity:0.9;'>" . print_r($var, true) . "</pre>";
         }
     }
 }
@@ -69,7 +74,7 @@ if (!function_exists('isTrue')) {
 
 if (!function_exists('e')) {
     /**
-     * 
+     *
      * @param \Exception|string $e
      * @throws void
      */
@@ -174,7 +179,7 @@ if (!function_exists('cutStrBy2Char')) {
     }
 }
 
-if(!function_exists('api')){
+if (!function_exists('api')) {
     /**
      * 包装下接口
      *
@@ -182,10 +187,50 @@ if(!function_exists('api')){
      * @param mix $message
      * @return void
      */
-    function api($code,$message){
+    function api($code, $message)
+    {
         return [
             "code" => $code,
             "message" => $message
         ];
+    }
+}
+
+if (!function_exists('s2NaH')) {
+    function s2NaH($s)
+    {
+        preg_match_all("/[a-zA-Z0-9\x{4e00}-\x{9fa5}]/u", mb_convert_encoding($s, 'utf-8'), $x);
+        $b = mb_convert_encoding(join("", $x[0]), 'UTF-8');
+        return $b;
+    }
+}
+
+if (!function_exists('isRule')) {
+    /**
+     * 检验字符串$var是否符合$rule规则
+     * 不符合规则抛出异常
+     *
+     * @param string $var
+     * @param string $rule
+     * @return boolean
+     */
+    function isRule($var, $rule)
+    {
+        if (is_string($var) && is_string($rule)) {
+            if (preg_match($rule, $var)) {
+                return true;
+            } else {
+                $debugInfo = debug_backtrace();
+                $file = $debugInfo[0]['file'];
+                $debugInfo = $debugInfo[0]['line'];
+                throw new \verb\exception\BadStrType("match faild of:" . $file . " in " . $debugInfo, $var);
+                return false;
+            }
+        } else {
+            $debugInfo = debug_backtrace();
+            $debugInfo = $debugInfo[0]['file'];
+            throw new \verb\exception\BadStrType("Not Sting of :" . $file . " in " . $debugInfo, $var);
+            return false; //不是字符串
+        }
     }
 }

@@ -17,24 +17,24 @@ abstract class CacheDriver
     private static $cacheHandle=null;
      /**
      * 默认为文件缓存
-     * 
+     *
      * @param string $driver 缓存驱动默认为'file'.
      * @param array $options 缓存参数
      * 需要redis支持,先安装扩展phpredis;
      * options = array() 参数列表:
      * 'host'       => string,host;
      * 'port'       => int,post;
-     * 'password'   => string,passwd; 
-     * 'select'     => int,选择数据库; 
-     * 'timeout'    => int,超时时间(秒); 
-     * 'expire'     => int,默认过期时间(秒); 
-     * 'persistent' => false/true,是否长连接; 
-     * 'prefix'     => string, 默认前缀; 
-     * 'serialize'  => true/false,是否序列化; 
-     * 'cache_subdir'   => true/false,是否使用缓存子目录; 
-     * 'path'           => string,缓存目录; 
-     * 'hash_type'      => string,哈希函数; 
-     * 'data_compress'  => false/true,是否压缩; 
+     * 'password'   => string,passwd;
+     * 'select'     => int,选择数据库;
+     * 'timeout'    => int,超时时间(秒);
+     * 'expire'     => int,默认过期时间(秒);
+     * 'persistent' => false/true,是否长连接;
+     * 'prefix'     => string, 默认前缀;
+     * 'serialize'  => true/false,是否序列化;
+     * 'cache_subdir'   => true/false,是否使用缓存子目录;
+     * 'path'           => string,缓存目录;
+     * 'hash_type'      => string,哈希函数;
+     * 'data_compress'  => false/true,是否压缩;
      */
     public static function register($driver='',$options=[]){
         if(self::$cacheHandle == null){//单例模式,在初始化第一次时确定驱动
@@ -48,8 +48,8 @@ abstract class CacheDriver
             }
             if(empty($driver)){
                 $driver = 'FILE';
-            }     
-            Logger::info('choose cache driver:'.$driver);       
+            }
+            Logger::info('choose cache driver:'.$driver);
             //根据db插件的类型，自动返回实例，支持原生pdo和medoo
             switch (strtoupper($driver)) {
                 case 'FILE':
@@ -58,8 +58,8 @@ abstract class CacheDriver
                 case 'REDIS':
                     self::$cacheHandle =  new RedisCache($options);
                     break;
-                case 'APC':
-                    self::$cacheHandle =  new ApcCache($options);
+                case 'APCU':
+                    self::$cacheHandle =  new ApcuCache($options);
                     break;
             }
         }
@@ -217,14 +217,10 @@ abstract class CacheDriver
                         $value = Container::getInstance()->invokeFunction($value);
                     }
                 }
- 
-
                 // 缓存数据
                 $this->set($name, $value, $expire);
-
                 // 解锁
                 $this->del($name . '_lock');
-
                 //todo 为什么需要抛出这两个异常
             } catch (\Exception $e) {
                 $this->del($name . '_lock');
@@ -392,7 +388,7 @@ abstract class CacheDriver
 /*
      protected function setTagItem($tag)
      {
- 
+
          if ($this->tag) {
              $tagKey    = $this->getTagkey($this->tag);
              $prev      = $this->tag;//tmp
@@ -400,16 +396,16 @@ abstract class CacheDriver
              if ($this->has($tagKey)) {//判断有没有这个tag
                  $value   = explode(',', $this->get($tagKey));//字符串转化为数组
                  $value[] = $tag;//这啥意思？
- 
+
                  if (count($value) > 1000) {
                      array_shift($value);//删除数组中第一个元素
                  }
- 
+
                  $value = implode(',', array_unique($value));//把数组去重然后合并为字符串
              } else {
                  $value = $tag;//缓存中没有这个tag，那么直接存进去
              }
- 
+
              $this->set($tagKey, $value, 0);
              $this->tag = $prev;
          }

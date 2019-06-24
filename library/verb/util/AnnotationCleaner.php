@@ -5,14 +5,14 @@ namespace verb\util;
  */
 class AnnotationCleaner
 {
-    
+
     static public function clean($text) {
         $o = new AnnotationCleaner();
         return $o->clean_($text);
     }
     //去掉注释
     private function clean_($text) {
-        
+
         $this->dest = '';
         $this->tmp = $text;
         $state = 'stateNormal';
@@ -21,7 +21,7 @@ class AnnotationCleaner
         }
         return $this->dest;
     }
-  
+
     private function stateNormal(){
         $stateBegin = [
             '//'=>'stateAntSL', //单行注释
@@ -29,7 +29,7 @@ class AnnotationCleaner
             '\''=>'stateStrSQ', //单引号
             '"'=>'stateStrDQ',//双引号
         ];
-        
+
         $count = strlen($this->tmp);
         for($i=0; $i<$count; $i++){
             foreach ($stateBegin as $k=>$v){
@@ -76,7 +76,7 @@ class AnnotationCleaner
     private function stateStrDQ(){
         return $this->stateStr('"');
     }
-    
+
     private function stateStr($q){
         $count = strlen($this->tmp);
         for($i=1; $i<$count; $i++){

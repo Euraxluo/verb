@@ -39,19 +39,24 @@ class RedisCache extends CacheDriver
             $this->options = array_merge($this->options, $options);
         }
         if (extension_loaded('redis')) { //检查是否安装扩展phpredis
-            $this->handler = new \Redis; //获得句柄
-            if ($this->options['persistent']) { //判断是否长连接
-                $this->handler->pconnect($this->options['host'], $this->options['port'], $this->options['timeout'], 'persistent_id_' . $this->options['select']);
-            } else {
-                $this->handler->connect($this->options['host'], $this->options['port'], $this->options['timeout']);
-            }
+            try { //连接数据库
+                $this->handler = new \Redis; //获得句柄
+                if ($this->options['persistent']) { //判断是否长连接
+                    $this->handler->pconnect($this->options['host'], $this->options['port'], $this->options['timeout'], 'persistent_id_' . $this->options['select']);
+                } else {
+                    $this->handler->connect($this->options['host'], $this->options['port'], $this->options['timeout']);
+                }
 
-            if ('' != $this->options['password']) {//判断密码
-                $this->handler->auth($this->options['password']);
-            }
 
-            if (0 != $this->options['select']) {//选择数据库
-                $this->handler->select($this->options['select']);
+                if ('' != $this->options['password']) { //判断密码
+                    $this->handler->auth($this->options['password']);
+                }
+
+                if (0 != $this->options['select']) { //选择数据库
+                    $this->handler->select($this->options['select']);
+                }
+            } catch (\RedisException $e) {
+                p("redis 连接失败!,检查是否开启redis-cli,具体错误：".$e->getMessage());
             }
         } else {
             Logger::warning("Redis cache init faild,not support redis");
@@ -66,7 +71,12 @@ class RedisCache extends CacheDriver
      */
     public function has($name)
     {
-        return $this->handler->exists($this->getCacheKey($name));
+
+        try {
+            return $this->handler->exists($this->getCacheKey($name));
+        } catch (\RedisException $e) {
+            p("Redis服务出现错误：". $e->getMessage()."，请检查服务器");
+        }
     }
 
     /**
@@ -77,15 +87,20 @@ class RedisCache extends CacheDriver
      */
     public function get($name, $default = false)
     {
-        $this->readTimes++;
 
-        $value = $this->handler->get($this->getCacheKey($name));
+        try {
+            $this->readTimes++;
 
-        if (is_null($value) || false === $value) {
-            return $default;
+            $value = $this->handler->get($this->getCacheKey($name));
+
+            if (is_null($value) || false === $value) {
+                return $default;
+            }
+
+            return $this->unserialize($value);
+        } catch (\RedisException $e) {
+            p("Redis服务出现错误：".$e->getMessage()."，请检查服务器");
         }
-
-        return $this->unserialize($value);
     }
 
     /**
@@ -97,30 +112,27 @@ class RedisCache extends CacheDriver
      */
     public function set($name, $value, $expire = null)
     {
-        $this->writeTimes++;
 
-        if (is_null($expire)) {
-            $expire = $this->options['expire'];
+        try {
+            $this->writeTimes++;
+
+            if (is_null($expire)) {
+                $expire = $this->options['expire'];
+            }
+            $key    = $this->getCacheKey($name);
+            $expire = $this->getExpireTime($expire);
+
+            $value = $this->serialize($value);
+
+            if ($expire) {
+                $result = $this->handler->setex($key, $expire, $value);
+            } else {
+                $result = $this->handler->set($key, $value);
+            }
+            return $result;
+        } catch (\RedisException $e) {
+            p("Redis服务出现错误：".$e->getMessage()."，请检查服务器");
         }
-
-        // if ($this->tag && !$this->has($name)) {
-            // $first = true;
-        // }
-
-        $key    = $this->getCacheKey($name);
-        $expire = $this->getExpireTime($expire);
-
-        $value = $this->serialize($value);
-
-        if ($expire) {
-            $result = $this->handler->setex($key, $expire, $value);
-        } else {
-            $result = $this->handler->set($key, $value);
-        }
-
-        // isset($first) && $this->setTagItem($key);
-
-        return $result;
     }
 
     /**
@@ -131,11 +143,16 @@ class RedisCache extends CacheDriver
      */
     public function inc($name, $step = 1)
     {
-        $this->writeTimes++;
 
-        $key = $this->getCacheKey($name);
+        try {
+            $this->writeTimes++;
 
-        return $this->handler->incrby($key, $step);
+            $key = $this->getCacheKey($name);
+
+            return $this->handler->incrby($key, $step);
+        } catch (\RedisException $e) {
+            p("Redis服务出现错误：".$e->getMessage()."，请检查服务器");
+        }
     }
 
     /**
@@ -146,11 +163,16 @@ class RedisCache extends CacheDriver
      */
     public function dec($name, $step = 1)
     {
-        $this->writeTimes++;
 
-        $key = $this->getCacheKey($name);
+        try {
+            $this->writeTimes++;
 
-        return $this->handler->decrby($key, $step);
+            $key = $this->getCacheKey($name);
+
+            return $this->handler->decrby($key, $step);
+        } catch (\RedisException $e) {
+            p("Redis服务出现错误：".$e->getMessage()."，请检查服务器");
+        }
     }
 
     /**
@@ -160,9 +182,14 @@ class RedisCache extends CacheDriver
      */
     public function del($name)
     {
-        $this->writeTimes++;
 
-        return $this->handler->del($this->getCacheKey($name));
+        try {
+            $this->writeTimes++;
+
+            return $this->handler->del($this->getCacheKey($name));
+        } catch (\RedisException $e) {
+            p("Redis服务出现错误：".$e->getMessage()."，请检查服务器");
+        }
     }
 
     /**
@@ -172,20 +199,25 @@ class RedisCache extends CacheDriver
      */
     public function clear($tag = null)
     {
-        if ($tag) {
-            // 指定标签清除
-            $keys = $this->getTagItem($tag);
 
-            $this->handler->del($keys);
+        try {
+            if ($tag) {
+                // 指定标签清除
+                $keys = $this->getTagItem($tag);
 
-            $tagName = $this->getTagKey($tag);
-            $this->handler->del($tagName);
-            return true;
+                $this->handler->del($keys);
+
+                $tagName = $this->getTagKey($tag);
+                $this->handler->del($tagName);
+                return true;
+            }
+
+            $this->writeTimes++;
+
+            return $this->handler->flushDB();
+        } catch (\RedisException $e) {
+            p("Redis服务出现错误：".$e->getMessage()."，请检查服务器");
         }
-
-        $this->writeTimes++;
-
-        return $this->handler->flushDB();
     }
 
     /**
@@ -197,32 +229,33 @@ class RedisCache extends CacheDriver
      */
     public function setTag($tag, $keys = null, $overlay = false)
     {
-        if (!is_null($keys)){
-            $tagName = $this->getTagKey($tag);
-            if ($overlay) {
-                $this->handler->del($tagName);
+
+
+        try {
+            if (!is_null($keys)) {
+                $tagName = $this->getTagKey($tag);
+
+
+                if (is_string($keys)) {
+                    $keys = explode(',', $keys); //将字符串转化为数组
+                }
+
+                if ($overlay) { //判断是否覆盖
+                    $this->handler->del($tagName);
+                } else {
+                    $value = array_unique(array_merge($this->getTagItem($tag), $keys)); //合并，去重
+                }
+                foreach ($keys as $key) {
+                    $this->handler->sAdd($tagName, $key);
+                }
             }
 
-            foreach ($keys as $key) {
-                $this->handler->sAdd($tagName, $key);
-            }
+            return $this;
+        } catch (\RedisException $e) {
+            p("Redis服务出现错误：".$e->getMessage()."，请检查服务器");
         }
-
-        return $this;
     }
 
-    // /**
-    //  * 更新标签
-    //  * @param  string $name 缓存标识
-    //  * @return void
-    //  */
-    // public function setTagItem($name)
-    // {
-    //     if ($this->tag) {
-    //         $tagName = $this->getTagKey($this->tag);
-    //         $this->handler->sAdd($tagName, $name);
-    //     }
-    // }
 
     /**
      * 获取标签包含的缓存标识
@@ -231,8 +264,12 @@ class RedisCache extends CacheDriver
      */
     public function getTagItem($tag)
     {
-        $tagName = $this->getTagKey($tag);
-        return $this->handler->sMembers($tagName);
+        try {
+            $tagName = $this->getTagKey($tag);
+            return $this->handler->sMembers($tagName);
+        } catch (\RedisException $e) {
+            p("Redis服务出现错误：".$e->getMessage()."，请检查服务器");
+        }
     }
 }
 

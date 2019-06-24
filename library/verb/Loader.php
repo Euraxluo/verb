@@ -40,7 +40,7 @@ class Loader
          */
         if (is_dir(self::$composerPath)) {
             if (is_file(self::$composerPath . 'autoload.php')) {
-                require self::$composerPath . 'autoload.php'; 
+                require self::$composerPath . 'autoload.php';
                 if($debug){
                     $whoops = new \Whoops\Run;
                     $errorTitle = 'verb framework error';
@@ -128,7 +128,7 @@ class Loader
         foreach ($namespace as $k => $v) {
             define(strtoupper($k), $v, true);
         }
-        
+
     }
 
     /**

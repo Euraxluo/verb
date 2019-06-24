@@ -4,7 +4,7 @@ namespace verb;
 use verb\util\AnnotationCleaner;
 
 class Conf
-{       
+{
     private static $confs = array();//配置内容
     private static $conf_file;//文件路径
 

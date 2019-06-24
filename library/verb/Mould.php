@@ -3,6 +3,8 @@ namespace verb;
 
 use Twig\Loader\FilesystemLoader;
 use Twig\Environment;
+use verb\exception\ClassNotFoundException;
+use verb\exception\Forbidden;
 
 class Mould
 {
@@ -35,7 +37,7 @@ class Mould
         } elseif (substr($this->options['cache_path'], -1) != DIRECTORY_SEPARATOR) { //加线
             $this->options['cache_path'] .= DIRECTORY_SEPARATOR;
         }
-        if (COMPOSER) { //如果引入了第三方插件就使用twig模板引擎
+        if (COMPOSER && class_exists('\Twig\Loader\FilesystemLoader') && class_exists('\Twig\Environment')) { //如果引入了第三方插件就使用twig模板引擎
             $this->loader = new \Twig\Loader\FilesystemLoader($this->options['loader']); //默认加载器
             $this->twig = new \Twig\Environment($this->loader, [
                 'cache' => $this->options['cache_path'], //path/to/compilation_cache
@@ -70,9 +72,13 @@ class Mould
         if (!\is_array($paths)) {//判断是否是数组
             $paths = [$paths];
         }
-        foreach ($paths as $path) {
-            $path =  str_replace(SEPARATOR, DIRECTORY_SEPARATOR, $path);
-            $this->loader->addPath($path, $namespace);
+        if($this->loader != null){
+            foreach ($paths as $path) {
+                $path =  str_replace(SEPARATOR, DIRECTORY_SEPARATOR, $path);
+                $this->loader->addPath($path, $namespace);
+            }
+        }else{
+            throw new ClassNotFoundException('Twig not found');
         }
     }
     /**
@@ -102,7 +108,7 @@ class Mould
         if (is_file($template)) {
             include $template;
         } else {
-            throw new Forbidden;
+            throw new Forbidden("php path not found");
         }
     }
     /**
@@ -125,6 +131,8 @@ class Mould
                 $template =  $this->twig->loadTemplate($template); //加载模板文件
                 $template->display($vars); //渲染带有变量的模板
             }
+        }else{
+            throw new ClassNotFoundException('Twig not found');
         }
     }
 }
