@@ -3,11 +3,7 @@
 
 ### After a semester of studying php, write a small framework
 
-<<<<<<< HEAD
-遵守**PSR-4 **，**PSR-2**规范
-=======
 遵守**PSR-4**，**PSR-2**规范
->>>>>>> refs/heads/v1.0
 
 ### 文件结构 (directory structure)
 ```
