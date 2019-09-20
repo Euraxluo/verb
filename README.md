@@ -4,68 +4,62 @@
 ### After a semester of studying php, write a small framework
 
 遵守**PSR-4**，**PSR-2**规范
+写此框架时还没有学习设计模式,因此没有什么设计思想
 
 ### 文件结构 (directory structure)
 ```
 .
 ├── app                                         [用户主目录]
-│   ├── ctrls
-│   │   ├── indexCtrl.php                       [测试demo]
-│   │   └── testCtrl.php                        [测试demo]
-│   ├── models
-│   │   ├── AdminlogDao.php                     [model接口类]
-│   │   └── impl
-│   │       └── AdminlogImpl.php                [实现类]
-│   ├── po
-│   │   ├── Adminlog.php                        [实体类]
-│   │   └── User.php                            [实体类]
-│   └── views
-│       ├── TemplateTest.html                   [模板引擎测试文件]
-│       ├── layout.html                         [模板基]
-│       └── TemplateTest.php                    [模板引擎测试文件]
+│   └── TestCtrls
+│       └── test.php                            [测试demo]
 ├── library                                     [框架主目录]
-│   ├── base.php                                [初始化文件]
-│   ├── conf.json                               [框架配置文件]
-│   ├── conf.php                                [框架配置文件]
-│   ├── Doctrine                                [注解解析第三方包]│
-│   └── verb                                    [verb框架目录]
-│       ├── Conf.php                            [配置解析类]
-│       ├── Guider.php                          [引导注册类]
-│       ├── Loader.php                          [自动加载类]
-│       ├── Mould.php                           [模板引擎类]
-│       ├── Route.php                           [路由初始化类]
-│       ├── cache
-│       │   ├── CacheDriver.php                 [缓存驱动]
-│       │   └── driver
-│       │       ├── ApcCache.php                [APC驱动]
-│       │       ├── FileCache.php               [文件缓存驱动]
-│       │       └── RedisCache.php              [Redis缓存驱动]
-│       ├── model
-│       │   ├── driver
-│       │   │   ├── MedooModel.php              [Medoo第三方句柄]
-│       │   │   └── PdoModel.php                [返回PDO驱动句柄]
-│       │   └── ModelDriver.php                 [数据库连接驱动]
-│       ├── exception                           [异常类]
-│       │   ├── BadRequest.php
-│       │   ├── ClassNotFoundException.php
-│       │   ├── Forbidden.php
-│       │   └── NotFound.php
-│       ├── route
-│       │   ├── InitRoute.php                   [初始化路由类]
-│       │   └── Tree.php                        [路由树类]
-│       └── util
-│           ├── AnnotationCleaner.php           [注解清理类]
-│           ├── MetaInfo.php                    [注解解析类]
-│           ├── AnnotationReader.php            [注解读取类]
-│           ├── DocParser.php                   [第三方注解解析类]
-│           ├── function.php                    [常用方法]
-│           └── Logger.php                      [日志处理类]
-├── LICENSE.txt                 [开源协议]
-├── README.md                   [README]
-├── vendor                      [composer资源文件]
-├── composer.json               [composer配置文件]
-├── composer.lock
-└── index.php                   [入口文件]
+│   ├── base.php                                [初始化文件]
+│   ├── conf.json                               [框架配置文件]
+│   ├── conf.php                                [框架配置文件]
+│   ├── Doctrine                                [注解解析第三方包]
+│   └── verb                                    [verb框架目录]
+│       ├── Mould.php                           [模板引擎类]
+│       ├── Guider.php                          [引导注册类]
+│       ├── Loader.php                          [自动加载类]
+│       ├── Conf.php                            [配置解析类]
+│       ├── Route.php                           [路由接口]
+│       ├── AutoGenerationClass.php             [根据数据库自动生成实体类]
+│       ├── model
+│       │   ├── driver
+│       │   │   ├── MedooModel.php              [Medoo第三方句柄]
+│       │   │   └── PdoModel.php                [返回PDO驱动句柄]
+│       │   └── ModelDriver.php                 [数据库连接驱动]
+│       ├── cache
+│       │   ├── CacheDriver.php                 [缓存驱动]
+│       │   └── driver
+│       │       ├── ApcuCache.php               [APC驱动]
+│       │       ├── FileCache.php               [文件缓存驱动]
+│       │       └── RedisCache.php              [Redis缓存驱动]
+│       ├── medoo
+│       │   ├── Medoo.php
+│       │   └── README.md
+│       ├── route
+│       │   ├── InitRoute.php                   [初始化路由]
+│       │   └── Tree.php                        [路由(字典)树]
+│       ├── exception                           [异常类]
+│       │   ├── BadRequest.php
+│       │   ├── BadStrType.php
+│       │   ├── ClassNotFoundException.php
+│       │   ├── Forbidden.php
+│       │   └── NotFound.php
+│       └── util
+│           ├── AnnotationCleaner.php           [注解清理类]
+│           ├── AnnotationReader.php            [注解读取类]
+│           ├── DocParser.php                   [第三方注解解析类]
+│           ├── Enum.php                        [自己写的枚举类]
+│           ├── function.php                    [常用全局方法]
+│           ├── Logger.php                      [日志处理类]
+│           └── MetaInfo.php                    [注解解析类]
+├── composer.json                               [composer配置文件]
+├── index.php                                   [入口文件]
+├── LICENSE.txt                                 [开源协议]
+├── README.md                                   [README]
+└── verb.ico
 ```
 ### USE
 #### 你如果想使用medoo，Twig以及其他，你应该先`composer install`和`composer update`
